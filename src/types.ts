@@ -22,10 +22,18 @@ export type Layer = {
   id: string
 }
 
+export type ErrorLayer = {
+  id: string,
+  children: string[],
+  errors: ErrorMessage[]
+  name: string,
+}
+
 export type ErrorMessage = {
   node: SceneNode,
   type: string,
   message: string,
-  value: string
+  value: string,
+  name: string
   
 }

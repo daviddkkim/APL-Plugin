@@ -52,13 +52,14 @@ export default function () {
     return serializedNodes;
   }
 
-  function createErrorObject(node: SceneNode, type: string, message: string, value?: string) {
+  function createErrorObject(node: SceneNode, type: string, message: string, name: string, value?: string) {
 
     const error: ErrorMessage = {
       node: node,
       type: type,
       message: message,
-      value: value ? value : ''
+      name: name,
+      value: value ? value : '',
     }
 
     return error;
@@ -112,7 +113,9 @@ export default function () {
               node,
               "fill",
               "Missing fill style",
-              determineFill(node.fills as Paint[])
+              node.name,
+              determineFill(node.fills as Paint[]),
+              
             )
           );
           return errors
@@ -173,7 +176,7 @@ export default function () {
   function lint(nodes: SceneNode[]) {
     let errorArray: {
       id: string,
-      children: string[]
+      children: string[],
     }[] = [];
     let childArray: string[] = [];
     nodes.forEach(node => {
@@ -181,10 +184,12 @@ export default function () {
         id: string,
         children: string[]
         errors: ErrorMessage[]
+        name: string,
       } = {
         id: '',
         children: [],
-        errors: []
+        errors: [],
+        name: ''
       };
       if (node.type === 'FRAME' || node.type === 'INSTANCE' || node.type === 'GROUP') {
         // Create a new object.
@@ -193,7 +198,7 @@ export default function () {
         // Give it the existing node id.
         newObject.id = node.id;
         const lintErrors = determineType(node);
-
+        newObject.name= node.name;
         newObject.errors = lintErrors ? lintErrors : [];
 
         // Recursively run this function to flatten out children and grandchildren nodes
@@ -219,6 +224,7 @@ export default function () {
       } else {
         newObject.id = node.id;
         const lintErrors = determineType(node);
+        newObject.name= node.name;
 
         newObject.errors = lintErrors ? lintErrors : [];
         errorArray.push(newObject);
@@ -239,9 +245,9 @@ export default function () {
     /*     const lint = currentSelection.map((layer) => {
           return checkFills(layer, errors)
         }) */
-
+    console.log(lints)
     emit('LINT_SELECTION', data)
-    emit('LINT_ERROR', lints)
+    emit('LINT_ERROR', lints.reverse())
 
   })
 
@@ -249,5 +255,5 @@ export default function () {
 
 
 
-  showUI({ width: 340, height: 400 })
+  showUI({ width: 600, height: 500 })
 }
