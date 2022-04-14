@@ -14,3 +14,18 @@ export interface CreateObjectHandler extends EventHandler {
   name: "CREATE_OBJECT"
   handler: (object: Component) => void
 }
+
+export type Layer = {
+  name: string;
+  type: string;
+  children: Layer[];
+  id: string
+}
+
+export type ErrorMessage = {
+  node: SceneNode,
+  type: string,
+  message: string,
+  value: string
+  
+}
